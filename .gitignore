@@ -1,0 +1,6 @@
+.local/
+.kubeconfig
+*kubeconfig*
+__pycache__/
+*.pyc
+.env

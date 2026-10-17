@@ -1,0 +1,63 @@
+# Kubernetes: the notes app in a local cluster
+
+English · [Português](README.md)
+
+The app already runs in Docker. Now the idea is to see what changes in a cluster: who recreates a Pod, how requests reach the replicas and what needs to survive when the database restarts.
+
+This project uses the GHCR image built from [docker-lab](https://github.com/tommmdl/docker-lab). The API has two replicas; PostgreSQL uses a StatefulSet and a persistent volume. Its kind cluster is separate from other environments on the machine.
+
+[![Tests](https://github.com/tommmdl/kubernetes-lab/actions/workflows/test.yml/badge.svg)](https://github.com/tommmdl/kubernetes-lab/actions/workflows/test.yml)
+
+## Getting started
+
+Use Linux/WSL with accessible Docker, Python 3, Bash and curl. Automatic kind/kubectl installation supports Linux x86_64. Initial downloads need internet access, image storage space and an available port 8005.
+
+```bash
+git clone https://github.com/tommmdl/kubernetes-lab.git
+cd kubernetes-lab
+bash scripts/prepare.sh
+bash scripts/lab.sh up
+bash scripts/lab.sh status
+```
+
+Open **http://localhost:8005**. The interface switches between Portuguese and English. Access is local; this learning API has no user authentication.
+
+The cluster is named `devops-notes`, with application namespace `notes-lab`. The `scripts/k.sh` wrapper always uses this project's kubeconfig/context rather than the terminal's global context.
+
+## What to look for
+
+1. Create a note and delete an API Pod. Watch the Deployment replace it.
+2. Scale the API to three replicas and inspect the Service.
+3. Recreate the database Pod and see what the PVC preserves.
+4. Try a missing image, inspect the failed rollout and roll back.
+
+```bash
+bash scripts/k.sh get pods -o wide
+bash scripts/k.sh scale deployment/notes-api --replicas=3
+bash scripts/k.sh rollout status deployment/notes-api
+bash scripts/k.sh apply -f manifests/api.yaml
+```
+
+The last command restores the declared file configuration, including two replicas. The [usage guide](docs/guide.en.md) explains the components and how to investigate each scenario.
+
+## Checking the project
+
+```bash
+python3 tests/verify.py
+```
+
+The test uses only this cluster/namespace, creates its own note and removes it afterward. It replaces Pods, scales the API, checks persistence and introduces a missing-image update followed by rollback. Database Pod replacement causes a brief interruption while it returns.
+
+[Recorded results](docs/validation.en.md) explain what actually ran, with environment details and exercise limits. The local cluster stays running after tests so you can explore.
+
+## When you are done
+
+```bash
+bash scripts/lab.sh down
+```
+
+**This deletes the cluster and database contents, including PVCs.** The volume protects data during Pod replacement; it is not a backup outside the cluster. The script only deletes the cluster matching this project's name and local ownership marker.
+
+Kind, kubectl, password and kubeconfig remain under ignored `.local/`. Keep the password while retaining the database: generating a new file does not rotate the initialized PostgreSQL credential.
+
+[See the other portfolio projects](https://github.com/tommmdl/devops-portfolio)

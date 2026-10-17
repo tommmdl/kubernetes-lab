@@ -1,0 +1,53 @@
+name: Testa a aplicação no Kubernetes
+on:
+  push:
+    branches: [main]
+    paths: ['cluster/**', 'manifests/**', 'scripts/**', 'tests/**', '.github/workflows/**']
+  pull_request:
+    branches: [main]
+    paths: ['cluster/**', 'manifests/**', 'scripts/**', 'tests/**', '.github/workflows/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cluster:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Prepara kind e kubectl
+        run: bash scripts/prepare.sh
+      - name: Sobe o cluster e a aplicação
+        run: bash scripts/lab.sh up
+      - name: Testa recuperação, persistência e rollback
+        run: python3 tests/verify.py
+      - name: Reúne o diagnóstico
+        if: always()
+        run: |
+          if [ -f .local/kubeconfig ]; then
+            {
+              bash scripts/k.sh get nodes
+              bash scripts/k.sh get deploy,statefulset,pods,services,pvc,jobs
+              bash scripts/k.sh get events --sort-by=.metadata.creationTimestamp
+              bash scripts/k.sh logs job/notes-schema --tail=30
+            } > .local/diagnostics.log 2>&1 || true
+          fi
+      - name: Guarda os resultados
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: kubernetes-results
+          path: |
+            .local/verification.json
+            .local/diagnostics.log
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Remove o cluster do runner
+        if: always()
+        run: |
+          if [ -f .local/cluster-owned ]; then
+            bash scripts/lab.sh down
+          fi
