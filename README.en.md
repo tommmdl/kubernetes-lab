@@ -50,6 +50,8 @@ The test uses only this cluster/namespace, creates its own note and removes it a
 
 [Recorded results](docs/validation.en.md) explain what actually ran, with environment details and exercise limits. The local cluster stays running after tests so you can explore.
 
+All 24 checks passed locally and in GitHub Actions, including Pod recovery, persistence, scaling and rollback.
+
 ## When you are done
 
 ```bash

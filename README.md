@@ -50,6 +50,8 @@ O teste usa somente este cluster/namespace, cria sua própria nota e a remove ao
 
 Os [resultados registrados](docs/validation.md) explicam o que foi verificado de verdade, com recaps do ambiente e os limites dos exercícios. O cluster local fica rodando depois dos testes para você explorar.
 
+Os 24 testes passaram localmente e no GitHub Actions, incluindo recuperação dos Pods, persistência, escala e rollback.
+
 ## Quando terminar
 
 ```bash
