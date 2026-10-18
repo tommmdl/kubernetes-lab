@@ -71,3 +71,5 @@ O [argocd-lab](https://github.com/tommmdl/argocd-lab) usa esta mesma aplicação
 Para acompanhar a saúde da aplicação, o [monitoring-lab](https://github.com/tommmdl/monitoring-lab) adiciona Prometheus, Grafana e sondas HTTP no mesmo cluster, com um exercício de alerta que mantém a API disponível.
 
 Para praticar como a configuração chega aos containers, o [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) traz 26 exercícios de ambiente, ConfigMaps, Secrets, TLS e Downward API em um namespace separado, com soluções em português e inglês.
+
+Os digests das imagens agora incluem a primeira rodada de correções na API e no PostgreSQL. O banco continua na versão 17 e no Bookworm; mudam o auxiliar gosu e suas dependências Go. A API atualiza Flask/liblzma e remove da execução as ferramentas de instalação do pip. Veja os [relatórios completos de antes e depois](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.md). Os achados restantes continuam bloqueando o gate de segurança separado.

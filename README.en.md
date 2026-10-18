@@ -71,3 +71,5 @@ Kind, kubectl, password and kubeconfig remain under ignored `.local/`. Keep the 
 To watch application health, [monitoring-lab](https://github.com/tommmdl/monitoring-lab) adds Prometheus, Grafana and HTTP probes to the same cluster, with an alert drill that keeps the API available.
 
 To practice how configuration reaches containers, [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) provides 26 exercises on environment, ConfigMaps, Secrets, TLS and Downward API in a separate namespace, with Portuguese and English solutions.
+
+The image pins now include the first API and PostgreSQL remediation round. PostgreSQL stays on version 17 and Bookworm; only its gosu helper and Go dependencies change. The API updates Flask/liblzma and removes installation-only pip tooling from runtime. See the [full before/after reports](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.en.md). Remaining findings still block the separate security gate.
