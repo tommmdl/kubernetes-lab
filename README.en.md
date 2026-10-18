@@ -73,3 +73,5 @@ To watch application health, [monitoring-lab](https://github.com/tommmdl/monitor
 To practice how configuration reaches containers, [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) provides 26 exercises on environment, ConfigMaps, Secrets, TLS and Downward API in a separate namespace, with Portuguese and English solutions.
 
 The image pins now include the first API and PostgreSQL remediation round. PostgreSQL stays on version 17 and Bookworm; only its gosu helper and Go dependencies change. The API updates Flask/liblzma and removes installation-only pip tooling from runtime. See the [full before/after reports](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.en.md). Remaining findings still block the separate security gate.
+
+Remediation validation: 23 Compose checks, a controlled restore of three notes from the original PostgreSQL image into the rebuilt image, and 19 local tracing checks. The running Argo CD application is Synced/Healthy and retains the same PVC. Full evidence and remaining issues are linked above.
