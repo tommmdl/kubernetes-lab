@@ -67,3 +67,5 @@ Kind, kubectl, senha e kubeconfig ficam em `.local/`, fora do Git. Guarde a senh
 ## Próximo passo: GitOps
 
 O [argocd-lab](https://github.com/tommmdl/argocd-lab) usa esta mesma aplicação e cluster para praticar drift e self-heal. Depois da adoção pelo Argo CD, faça mudanças de configuração por aquele repositório; os exercícios de escala daqui podem ser revertidos automaticamente.
+
+Para acompanhar a saúde da aplicação, o [monitoring-lab](https://github.com/tommmdl/monitoring-lab) adiciona Prometheus, Grafana e sondas HTTP no mesmo cluster, com um exercício de alerta que mantém a API disponível.

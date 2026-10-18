@@ -67,3 +67,5 @@ Kind, kubectl, password and kubeconfig remain under ignored `.local/`. Keep the 
 ## Next step: GitOps
 
 [argocd-lab](https://github.com/tommmdl/argocd-lab) uses this application and cluster to explore drift and self-heal. After Argo CD takes over, change configuration through that repository; scaling exercises here may be automatically reverted.
+
+To watch application health, [monitoring-lab](https://github.com/tommmdl/monitoring-lab) adds Prometheus, Grafana and HTTP probes to the same cluster, with an alert drill that keeps the API available.
