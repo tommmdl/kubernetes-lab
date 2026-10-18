@@ -63,3 +63,7 @@ bash scripts/lab.sh down
 Kind, kubectl, password and kubeconfig remain under ignored `.local/`. Keep the password while retaining the database: generating a new file does not rotate the initialized PostgreSQL credential.
 
 [See the other portfolio projects](https://github.com/tommmdl/devops-portfolio)
+
+## Next step: GitOps
+
+[argocd-lab](https://github.com/tommmdl/argocd-lab) uses this application and cluster to explore drift and self-heal. After Argo CD takes over, change configuration through that repository; scaling exercises here may be automatically reverted.

@@ -63,3 +63,7 @@ bash scripts/lab.sh down
 Kind, kubectl, senha e kubeconfig ficam em `.local/`, fora do Git. Guarde a senha enquanto mantiver o banco: gerar outra não muda automaticamente a credencial já inicializada no PostgreSQL.
 
 [Ver os outros projetos do portfólio](https://github.com/tommmdl/devops-portfolio)
+
+## Próximo passo: GitOps
+
+O [argocd-lab](https://github.com/tommmdl/argocd-lab) usa esta mesma aplicação e cluster para praticar drift e self-heal. Depois da adoção pelo Argo CD, faça mudanças de configuração por aquele repositório; os exercícios de escala daqui podem ser revertidos automaticamente.
