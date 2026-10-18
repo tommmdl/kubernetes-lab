@@ -69,3 +69,5 @@ Kind, kubectl, password and kubeconfig remain under ignored `.local/`. Keep the 
 [argocd-lab](https://github.com/tommmdl/argocd-lab) uses this application and cluster to explore drift and self-heal. After Argo CD takes over, change configuration through that repository; scaling exercises here may be automatically reverted.
 
 To watch application health, [monitoring-lab](https://github.com/tommmdl/monitoring-lab) adds Prometheus, Grafana and HTTP probes to the same cluster, with an alert drill that keeps the API available.
+
+To practice how configuration reaches containers, [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) provides 26 exercises on environment, ConfigMaps, Secrets, TLS and Downward API in a separate namespace, with Portuguese and English solutions.
