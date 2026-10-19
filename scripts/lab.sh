@@ -5,6 +5,10 @@ cluster=devops-notes
 node_image=kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
 case "${1:-help}" in
   up)
+    if [[ -f .local/kubeconfig ]] && bash scripts/k.sh -n argocd get application notes >/dev/null 2>&1; then
+      echo 'The notes application is managed by Argo CD; update argocd-lab Git source instead of applying the basic lab here.' >&2
+      exit 1
+    fi
     if .local/bin/kind get clusters | grep -Fxq "$cluster"; then
       test -f .local/cluster-owned || { echo 'Existing cluster is not owned by this checkout; refusing to modify it.' >&2; exit 1; }
       .local/bin/kind export kubeconfig --name "$cluster" --kubeconfig "$PWD/.local/kubeconfig"
@@ -21,6 +25,14 @@ case "${1:-help}" in
     fi
     bash scripts/k.sh apply -f manifests/config.yaml -f manifests/postgres.yaml
     bash scripts/k.sh rollout status statefulset/postgres-alpine --timeout=240s
+    # Completed Job templates are immutable; rerun the idempotent schema Job.
+    if bash scripts/k.sh get job notes-schema >/dev/null 2>&1; then
+      active=$(bash scripts/k.sh get job notes-schema -o jsonpath='{.status.active}')
+      if [[ "$active" != "" && "$active" != 0 ]]; then
+        bash scripts/k.sh wait --for=condition=complete job/notes-schema --timeout=180s
+      fi
+      bash scripts/k.sh delete job notes-schema --wait=true
+    fi
     bash scripts/k.sh apply -f manifests/migrate.yaml
     bash scripts/k.sh wait --for=condition=complete job/notes-schema --timeout=180s
     bash scripts/k.sh apply -f manifests/api.yaml
