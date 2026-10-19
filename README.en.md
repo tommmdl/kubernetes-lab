@@ -1,10 +1,10 @@
 # Kubernetes: the notes app in a local cluster
 
 English · [Português](README.md)
+
 ## Current database: Alpine, with a tested rollback
 
 The labs now use the tested PostgreSQL Alpine image by digest. Adoption used logical backups and new volumes; original Debian volumes are retained. Actual API rollback preserved a note written after cutover. Read the [migration, backup and recovery procedure](docs/postgres-adoption.en.md). Earlier security reports remain available.
-
 
 The app already runs in Docker. Now the idea is to see what changes in a cluster: who recreates a Pod, how requests reach the replicas and what needs to survive when the database restarts.
 

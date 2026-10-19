@@ -1,10 +1,10 @@
 # Kubernetes: a aplicação de notas em um cluster local
 
 [English](README.en.md) · Português
+
 ## Banco atual: Alpine, com rollback testado
 
 Os labs agora usam a imagem PostgreSQL Alpine testada, fixada por digest. A adoção usou backup lógico e volumes novos; os volumes Debian originais continuam guardados. O rollback real da API preservou uma nota criada depois da troca. Veja o [procedimento de migração, backup e recuperação](docs/postgres-adoption.md). Os relatórios de segurança anteriores continuam disponíveis.
-
 
 A aplicação já funciona no Docker. Agora a ideia é observar o que muda quando ela passa a rodar em um cluster: quem recria um Pod, como o tráfego chega às réplicas e o que precisa continuar existindo quando o banco reinicia.
 
