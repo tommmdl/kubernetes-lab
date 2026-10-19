@@ -106,6 +106,9 @@ try:
     k('delete', 'pod', 'postgres-alpine-0', '--wait=true', label='replace-database-pod')
     rollout('statefulset', 'postgres-alpine')
     ready()
+    # HTTP can recover before Kubernetes has sampled both readiness probes.
+    # Finish database recovery before starting the independent bad-image test.
+    rollout('deployment', 'notes-api')
     check('StatefulSet replaces PostgreSQL Pod', get('pod', 'postgres-alpine-0')['metadata']['uid'] != db_uid)
     check('PersistentVolumeClaim identity preserved', get('pvc', 'data-postgres-alpine-0')['metadata']['uid'] == pvc['metadata']['uid'])
     check('Note survives PostgreSQL Pod replacement', any(n['id'] == note_id and n['title'] == marker for n in call('/notes')[1]['notes']))
