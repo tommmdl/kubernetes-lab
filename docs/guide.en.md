@@ -57,7 +57,7 @@ When the database is unavailable, the API may remain alive while becoming unread
 
 ## Persistence is not backup
 
-The StatefulSet uses PVC `data-postgres-0`, with local storage associated with the worker. Database Pod replacement keeps that claim; deleting the cluster removes the node/data. Node loss and backup restoration are outside these tests.
+The StatefulSet uses PVC `data-postgres-alpine-0`, with local storage associated with the worker. Database Pod replacement keeps that claim; deleting the cluster removes the node/data. Node loss remains outside these tests; logical backup/restore and rollback are documented in [the adoption procedure](postgres-adoption.en.md).
 
 Default StatefulSet retention keeps the PVC if only the StatefulSet is deleted. Deleting the namespace or cluster also removes this environment's claims. Those operations are not a way to pause work while preserving valuable data.
 
@@ -90,7 +90,7 @@ With `maxUnavailable: 0` and `maxSurge: 1`, the update can add one Pod while kee
 
 ## Configuration details
 
-The API runs as UID 10001 with dropped capabilities, no privilege escalation and a read-only rootfs. `/tmp` uses memory-backed emptyDir. PostgreSQL runs as UID/GID 999 and writes to its volume. Pods do not automatically receive ServiceAccount tokens.
+The API runs as UID 10001 with dropped capabilities, no privilege escalation and a read-only rootfs. `/tmp` uses memory-backed emptyDir. PostgreSQL runs as UID/GID 70 and writes to its volume. Pods do not automatically receive ServiceAccount tokens.
 
 The Secret is created from `.local/db-password`, without embedding its contents in tracked manifests. Base64 in a Secret is not encryption by itself; no vault or at-rest Secret encryption is configured. The lab database user has the administrative privileges provided by the image. The API has no TLS or user authentication.
 

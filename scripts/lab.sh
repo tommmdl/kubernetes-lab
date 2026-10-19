@@ -15,8 +15,12 @@ case "${1:-help}" in
     chmod 600 .local/kubeconfig
     bash scripts/k.sh apply -f manifests/namespace.yaml
     bash scripts/k.sh create secret generic notes-db --from-file=password=.local/db-password --dry-run=client -o yaml | bash scripts/k.sh apply -f -
+    if bash scripts/k.sh get pvc data-postgres-0 >/dev/null 2>&1 && [[ "$(bash scripts/k.sh get statefulset postgres -o jsonpath='{.spec.replicas}' 2>/dev/null)" != 0 ]]; then
+      echo 'Existing Debian database: follow docs/postgres-adoption.md before starting Alpine.' >&2
+      exit 1
+    fi
     bash scripts/k.sh apply -f manifests/config.yaml -f manifests/postgres.yaml
-    bash scripts/k.sh rollout status statefulset/postgres --timeout=240s
+    bash scripts/k.sh rollout status statefulset/postgres-alpine --timeout=240s
     bash scripts/k.sh apply -f manifests/migrate.yaml
     bash scripts/k.sh wait --for=condition=complete job/notes-schema --timeout=180s
     bash scripts/k.sh apply -f manifests/api.yaml

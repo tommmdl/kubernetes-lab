@@ -72,7 +72,7 @@ check('Both kind nodes Ready', len(nodes) == 2 and all(any(c['type'] == 'Ready' 
 rollout('deployment', 'notes-api')
 check('Two API replicas available', get('deployment', 'notes-api')['status'].get('availableReplicas') == 2)
 check('Schema Job completed before application startup', get('job', 'notes-schema')['status'].get('succeeded') == 1)
-pvc = get('pvc', 'data-postgres-0')
+pvc = get('pvc', 'data-postgres-alpine-0')
 check('PostgreSQL claim Bound', pvc['status']['phase'] == 'Bound')
 ready()
 check('Liveness returns 200', call('/healthz')[0] == 200)
@@ -102,12 +102,12 @@ try:
     k('apply', '-f', 'manifests/api.yaml', label='restore-declared-replicas')
     rollout('deployment', 'notes-api')
     check('Applying manifest restores two replicas', get('deployment', 'notes-api')['spec']['replicas'] == 2)
-    db_uid = get('pod', 'postgres-0')['metadata']['uid']
-    k('delete', 'pod', 'postgres-0', '--wait=true', label='replace-database-pod')
-    rollout('statefulset', 'postgres')
+    db_uid = get('pod', 'postgres-alpine-0')['metadata']['uid']
+    k('delete', 'pod', 'postgres-alpine-0', '--wait=true', label='replace-database-pod')
+    rollout('statefulset', 'postgres-alpine')
     ready()
-    check('StatefulSet replaces PostgreSQL Pod', get('pod', 'postgres-0')['metadata']['uid'] != db_uid)
-    check('PersistentVolumeClaim identity preserved', get('pvc', 'data-postgres-0')['metadata']['uid'] == pvc['metadata']['uid'])
+    check('StatefulSet replaces PostgreSQL Pod', get('pod', 'postgres-alpine-0')['metadata']['uid'] != db_uid)
+    check('PersistentVolumeClaim identity preserved', get('pvc', 'data-postgres-alpine-0')['metadata']['uid'] == pvc['metadata']['uid'])
     check('Note survives PostgreSQL Pod replacement', any(n['id'] == note_id and n['title'] == marker for n in call('/notes')[1]['notes']))
     broken = 'ghcr.io/tommmdl/docker-lab:missing-' + uuid.uuid4().hex
     k('set', 'image', 'deployment/notes-api', 'api=' + broken, label='broken-update')
@@ -142,7 +142,7 @@ finally:
     check('Remove only the test note', call('/notes/' + str(note_id), 'DELETE')[0] == 204)
 check('Deleted test note returns 404', call('/notes/' + str(note_id), 'DELETE')[0] == 404)
 observations.update(api_replicas=get('deployment', 'notes-api')['status'].get('availableReplicas'),
-                    database_claim=get('pvc', 'data-postgres-0')['status']['phase'],
+                    database_claim=get('pvc', 'data-postgres-alpine-0')['status']['phase'],
                     api_image=original_image, node_count=len(nodes))
 result = {'executed_at_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
           'checks_passed': len(checks), 'checks': checks, 'observations': observations,

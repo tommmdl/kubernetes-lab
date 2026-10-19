@@ -57,7 +57,7 @@ Se o banco ficar indisponível, a API pode continuar viva enquanto deixa de esta
 
 ## Guardar dados não é fazer backup
 
-O StatefulSet usa o PVC `data-postgres-0`. O volume local fica associado ao worker. Substituir o Pod do banco mantém esse claim; excluir o cluster remove o nó e seus dados. Este teste não cobre perda de nó ou restauração de backup.
+O StatefulSet usa o PVC `data-postgres-alpine-0`. O volume local fica associado ao worker. Substituir o Pod do banco mantém esse claim; excluir o cluster remove o nó e seus dados. A perda de nó continua fora deste teste; restauração lógica e rollback agora estão no [procedimento de adoção](postgres-adoption.md).
 
 A política de retenção padrão do StatefulSet mantém o PVC se você remover só o StatefulSet. Excluir o namespace ou o cluster também remove os claims deste ambiente. Não use esses comandos como forma de pausar um estudo com dados que quer guardar.
 
@@ -90,7 +90,7 @@ A estratégia usa `maxUnavailable: 0` e `maxSurge: 1`: pode criar um Pod extra, 
 
 ## Cuidados com configuração
 
-A API roda como UID 10001, com capabilities removidas, sem escalada de privilégios e com rootfs somente leitura. `/tmp` usa emptyDir em memória. O PostgreSQL roda como UID/GID 999 e grava no volume. Pods não recebem automaticamente tokens de ServiceAccount.
+A API roda como UID 10001, com capabilities removidas, sem escalada de privilégios e com rootfs somente leitura. `/tmp` usa emptyDir em memória. O PostgreSQL roda como UID/GID 70 e grava no volume. Pods não recebem automaticamente tokens de ServiceAccount.
 
 O Secret é criado a partir de `.local/db-password`, sem incluir seu conteúdo nos manifests versionados. Base64 em um Secret não é criptografia por si só; não foi configurado um cofre ou criptografia de Secrets em repouso. O usuário `lab` do banco tem os privilégios administrativos da imagem de laboratório. Não há TLS ou autenticação de usuários na API.
 

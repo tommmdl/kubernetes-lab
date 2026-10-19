@@ -1,6 +1,10 @@
 # Kubernetes: a aplicação de notas em um cluster local
 
 [English](README.en.md) · Português
+## Banco atual: Alpine, com rollback testado
+
+Os labs agora usam a imagem PostgreSQL Alpine testada, fixada por digest. A adoção usou backup lógico e volumes novos; os volumes Debian originais continuam guardados. O rollback real da API preservou uma nota criada depois da troca. Veja o [procedimento de migração, backup e recuperação](docs/postgres-adoption.md). Os relatórios de segurança anteriores continuam disponíveis.
+
 
 A aplicação já funciona no Docker. Agora a ideia é observar o que muda quando ela passa a rodar em um cluster: quem recria um Pod, como o tráfego chega às réplicas e o que precisa continuar existindo quando o banco reinicia.
 
@@ -72,7 +76,9 @@ Para acompanhar a saúde da aplicação, o [monitoring-lab](https://github.com/t
 
 Para praticar como a configuração chega aos containers, o [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) traz 26 exercícios de ambiente, ConfigMaps, Secrets, TLS e Downward API em um namespace separado, com soluções em português e inglês.
 
-Os digests das imagens agora incluem a primeira rodada de correções na API e no PostgreSQL. O banco continua na versão 17 e no Bookworm; mudam o auxiliar gosu e suas dependências Go. A API atualiza Flask/liblzma e remove da execução as ferramentas de instalação do pip. Veja os [relatórios completos de antes e depois](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.md). Os achados restantes continuam bloqueando o gate de segurança separado.
+## Etapas anteriores de segurança (evidências históricas)
+
+Na etapa anterior, os digests das imagens incluíram a primeira rodada de correções na API e no PostgreSQL. Naquela etapa, o banco continuou na versão 17 e no Bookworm; mudaram o auxiliar gosu e suas dependências Go. A API atualiza Flask/liblzma e remove da execução as ferramentas de instalação do pip. Veja os [relatórios completos de antes e depois](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.md). Os achados restantes continuam bloqueando o gate de segurança separado.
 
 Validação das correções: 23 testes do Compose, restauração controlada de três notas da imagem original do PostgreSQL para a recompilada e 19 testes locais de tracing. A aplicação do Argo CD está Synced/Healthy e mantém o mesmo PVC. As evidências completas e as pendências estão no link acima.
 

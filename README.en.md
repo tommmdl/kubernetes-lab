@@ -1,6 +1,10 @@
 # Kubernetes: the notes app in a local cluster
 
 English · [Português](README.md)
+## Current database: Alpine, with a tested rollback
+
+The labs now use the tested PostgreSQL Alpine image by digest. Adoption used logical backups and new volumes; original Debian volumes are retained. Actual API rollback preserved a note written after cutover. Read the [migration, backup and recovery procedure](docs/postgres-adoption.en.md). Earlier security reports remain available.
+
 
 The app already runs in Docker. Now the idea is to see what changes in a cluster: who recreates a Pod, how requests reach the replicas and what needs to survive when the database restarts.
 
@@ -72,7 +76,9 @@ To watch application health, [monitoring-lab](https://github.com/tommmdl/monitor
 
 To practice how configuration reaches containers, [kubernetes-config-lab](https://github.com/tommmdl/kubernetes-config-lab) provides 26 exercises on environment, ConfigMaps, Secrets, TLS and Downward API in a separate namespace, with Portuguese and English solutions.
 
-The image pins now include the first API and PostgreSQL remediation round. PostgreSQL stays on version 17 and Bookworm; only its gosu helper and Go dependencies change. The API updates Flask/liblzma and removes installation-only pip tooling from runtime. See the [full before/after reports](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.en.md). Remaining findings still block the separate security gate.
+## Previous security stages (historical evidence)
+
+The earlier image pins included the first API and PostgreSQL remediation round. At that stage PostgreSQL stayed on version 17 and Bookworm; its gosu helper and Go dependencies changed. The API updates Flask/liblzma and removes installation-only pip tooling from runtime. See the [full before/after reports](https://github.com/tommmdl/security-lab/blob/main/docs/remediation.en.md). Remaining findings still block the separate security gate.
 
 Remediation validation: 23 Compose checks, a controlled restore of three notes from the original PostgreSQL image into the rebuilt image, and 19 local tracing checks. The running Argo CD application is Synced/Healthy and retains the same PVC. Full evidence and remaining issues are linked above.
 
